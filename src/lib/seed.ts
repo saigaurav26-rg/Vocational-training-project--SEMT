@@ -274,13 +274,14 @@ export async function seedDatabase(): Promise<void> {
   const staffHash = await bcrypt.hash('staff123', 10);
   const viewerHash = await bcrypt.hash('viewer123', 10);
 
-  const insertUser = db.prepare(
-    'INSERT INTO users (email, name, password_hash, role, is_demo) VALUES (?, ?, ?, ?, ?)'
-  );
-  insertUser.run('admin@semt.local', 'System Administrator', adminHash, 'ADMIN', 0);
-  insertUser.run('engineer@semt.local', 'Demo Engineer', engineerHash, 'ENGINEER', 1);
-  insertUser.run('staff@semt.local', 'Demo Maintenance Staff', staffHash, 'MAINTENANCE_STAFF', 1);
-  insertUser.run('viewer@semt.local', 'Demo Viewer', viewerHash, 'VIEWER', 1);
+const insertUser = db.prepare(
+  'INSERT OR IGNORE INTO users (email, name, password_hash, role, is_demo) VALUES (?, ?, ?, ?, ?)'
+);
+
+insertUser.run('admin@semt.local', 'System Administrator', adminHash, 'ADMIN', 0);
+insertUser.run('engineer@semt.local', 'Demo Engineer', engineerHash, 'ENGINEER', 1);
+insertUser.run('staff@semt.local', 'Demo Maintenance Staff', staffHash, 'MAINTENANCE_STAFF', 1);
+insertUser.run('viewer@semt.local', 'Demo Viewer', viewerHash, 'VIEWER', 1);
 
   const typeIds: Record<string, number> = {};
   const insertType = db.prepare(
